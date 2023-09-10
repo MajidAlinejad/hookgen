@@ -109,8 +109,7 @@ export function apiTemplate({
         requestBody as OpenAPIV3.RequestBodyObject
       )},
       format: 'json',
-      ...getData(params),
-      ...header,
+      query:{...getData(params),...header},
     });
      return axiosData; 
   },`;

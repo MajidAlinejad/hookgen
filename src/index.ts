@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 /* eslint-disable node/no-unsupported-features/node-builtins */
 import {getConfig} from './config/index.ts';
 import ora from 'ora';

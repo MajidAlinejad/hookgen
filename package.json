@@ -30,10 +30,11 @@
     "email": "**",
     "url": "***"
   },
+  "preferGlobal": "true",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "bin": {
-    "gen": "dist/src/index.js"
+    "gen": "dist/index.js && gts fix"
   },
   "scripts": {
     "gen": "ts-node-esm src/index.ts",
