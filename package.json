@@ -1,0 +1,72 @@
+{
+  "name": "ts-code-gen",
+  "version": "0.0.1",
+  "description": "A Typescript OpenApi CodeGen",
+  "keywords": [
+    "ts-code-gen",
+    "typescript code generator",
+    "typescript OpenApi code generator",
+    "typescript swagger code generator",
+    "typescript CodeGen",
+    "Axios swagger CodeGen",
+    "Axios OpenApi CodeGen",
+    "useSWR CodeGen",
+    "useSWR OpenApi CodeGen",
+    "reactQuery OpenApi CodeGen",
+    "reactQuery Swagger CodeGen",
+    "reactQuery typescript CodeGen",
+    "typescript api hook CodeGen",
+    "ts swagger generator"
+  ],
+  "homepage": "***/ts-code-gen",
+  "repository": "***/ts-code-gen",
+  "bugs": {
+    "url": "***/ts-code-gen/issues",
+    "email": "**"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Majid Alinejad",
+    "email": "**",
+    "url": "***"
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "bin": {
+    "gen": "dist/src/index.js"
+  },
+  "scripts": {
+    "gen": "ts-node-esm src/index.ts",
+    "postgen": "gts fix",
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "build": "tsc -p .",
+    "compile": "tsup",
+    "fix": "gts fix",
+    "prepare": "npm.cmd run compile",
+    "pretest": "npm.cmd run compile",
+    "posttest": "npm.cmd run lint"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@tanstack/react-query": "^4.33.0",
+    "@types/lodash": "^4.14.197",
+    "@types/node": "^20.4.5",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "gts": "^5.0.0",
+    "swr": "^2.2.1",
+    "tsup": "^7.2.0",
+    "typescript": "~5.1.6"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "chalk": "^5.3.0",
+    "cosmiconfig": "^8.2.0",
+    "lodash": "^4.17.21",
+    "make-dir": "^4.0.0",
+    "node-emoji": "^2.1.0",
+    "openapi-types": "^12.1.3",
+    "ora": "^7.0.1",
+    "prettier": "^3.0.1"
+  }
+}

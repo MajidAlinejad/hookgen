@@ -1,0 +1,29 @@
+{
+  "extends": "./node_modules/gts/tsconfig-google.json",
+  "compilerOptions": {
+    "lib": [
+      "ESNext" /* ESNext includes new Level-4 features that were
+               recently added to the ECMA-262 JS spec */
+    ],
+
+    "module": "NodeNext" /* (1 of 2) TS v4.7 settings you need 
+                            to change */,
+    "target": "ES2015",
+    "moduleResolution": "NodeNext" /* This is the one that will 
+                                    specifically solve the error you're 
+                                    getting. Without the internal changes
+                                    made by this, your project will not
+                                    resolve modules correctly. */,
+
+    "esModuleInterop": true /* This is properly configured. FYI you cannot 
+                                change this, it must be set to true. */,
+    "rootDir": ".",
+    "allowImportingTsExtensions": true,
+    "emitDeclarationOnly": true,
+    "noUnusedLocals": true,
+
+    "outDir": "build"
+  },
+  "include": ["src", "src/**/*.mts"],
+  "exclude": ["out"]
+}

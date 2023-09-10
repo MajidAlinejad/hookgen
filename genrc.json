@@ -1,0 +1,20 @@
+{
+  "baseUrl": "https://intapi.ifp24.com",
+  "outDir": "./out",
+  "hook": "ReactQuery",
+  "archive": true,
+  "fileTypes": {
+    "enums": "ts",
+    "types": "d.ts",
+    "client": "ts",
+    "api": "ts",
+    "hook": "ts"
+  },
+  "prettier": {
+    "singleQuote": false,
+    "useTabs": true,
+    "tabWidth": 4,
+    "printWidth": 200,
+    "parser": "typescript"
+  }
+}
