@@ -18,18 +18,19 @@
     "typescript api hook CodeGen",
     "ts swagger generator"
   ],
-  "homepage": "***/ts-code-gen",
-  "repository": "***/ts-code-gen",
+  "homepage": "https://github.com/MajidAlinejad/ts-code-gen",
+  "repository": "https://github.com/MajidAlinejad/ts-code-gen",
   "bugs": {
-    "url": "***/ts-code-gen/issues",
-    "email": "**"
+    "url": "https://github.com/MajidAlinejad/ts-code-gen/issues",
+    "email": "Alinejad.mj@gmail.com"
   },
   "license": "MIT",
   "author": {
     "name": "Majid Alinejad",
-    "email": "**",
-    "url": "***"
+    "email": "Alinejad.mj@gmail.com",
+    "url": "https://github.com/MajidAlinejad"
   },
+  "private": false,
   "preferGlobal": "true",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
