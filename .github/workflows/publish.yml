@@ -18,15 +18,17 @@ jobs:
       github.event_name == 'push' }}
 
     steps:
-      - uses: actions/checkout@v4
-      # Setup .npmrc file to publish to npm
-      - uses: actions/setup-node@v4
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup node
+        uses: actions/setup-node@v3
         with:
-          node-version: '20.x'
+          node-version: 18
           registry-url: https://registry.npmjs.org/
+          
       - name: 🚀 Deploy Production
         if: ${{ github.ref == 'refs/heads/main' }}
-       
-        run: npm ci && npm tsup && npm publish
+        run: sudo ln -s /usr/local/bin/node /usr/bin/node && npm install && npm tsup && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_GITHUB_TOKEN }}
