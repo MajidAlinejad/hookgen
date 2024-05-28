@@ -31,7 +31,6 @@
     "url": "https://github.com/MajidAlinejad"
   },
   "private": false,
-  "preferGlobal": "true",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "bin": {
@@ -45,9 +44,8 @@
     "build": "tsc -p .",
     "compile": "tsup",
     "fix": "gts fix",
-    "prepare": "npm.cmd run compile",
-    "pretest": "npm.cmd run compile",
-    "posttest": "npm.cmd run lint"
+    "pretest": "npm run compile",
+    "posttest": "npm run lint"
   },
   "type": "module",
   "devDependencies": {
@@ -55,7 +53,7 @@
     "@types/lodash": "^4.14.197",
     "@types/node": "^20.4.5",
     "eslint-plugin-unused-imports": "^3.0.0",
-    "gts": "^5.0.0",
+    "gts": "5.0.0",
     "swr": "^2.2.1",
     "tsup": "^7.2.0",
     "typescript": "~5.1.6"
