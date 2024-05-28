@@ -3,16 +3,37 @@ import {Spec} from '../../types.ts';
 import chalk from 'chalk';
 import ora from 'ora';
 import {save} from '../../func/Save/save.ts';
-import {definitionFullName} from '../../helper/index.ts';
+import {definitionFullName, pathSplit} from '../../helper/index.ts';
 import {PathIterator} from '../../func/PathMapper/index.ts';
 import {camelCase} from '../../func/Typescript/TypeNameMaker/index.ts';
 import {hookTemplate} from './HooksTemplate.ts';
 import {configStore} from '../../config/index.ts';
 const importReactQuery =
-  'import { UseInfiniteQueryOptions, UseMutationOptions, UseQueryOptions, useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";';
+  'import { AxiosOpt } from "../client";import { UseInfiniteQueryOptions, UseMutationOptions, UseQueryOptions, useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";';
 const importSwr =
-  "import useSWR from 'swr';import useSWRMutation, {SWRMutationConfiguration} from 'swr/mutation';import {PublicConfiguration} from 'swr/_internal';";
+  "import { AxiosOpt } from '../client';import useSWR from 'swr';import useSWRMutation, {SWRMutationConfiguration} from 'swr/mutation';import {PublicConfiguration} from 'swr/_internal';";
+const importNg = `
+ import { UseInfiniteQuery,UseQuery,UseMutation } from '@ngneat/query';
+ import { inject } from '@angular/core';
+ import { NgQueryObserverOptions } from '@ngneat/query/lib/query';
+ import {  MutationObserverOptions} from '@tanstack/query-core'
+ import { HttpRequest,HttpHeaders } from "@angular/common/http";
+ import { BehaviorSubject, switchMap } from 'rxjs';
+  // 
+ export interface HttpErrorResponse<T>{
+    error?: T;
+    headers?: HttpHeaders;
+    status?: number;
+    statusText?: string;
+    url?: string;
+ }
 
+ `;
+const injectsNg = `  
+  private useInfiniteQuery = inject(UseInfiniteQuery);
+  private useQuery = inject(UseQuery);
+  private useMutation = inject(UseMutation);
+  `;
 /** */
 export async function createHooks(definations: Spec[]) {
   return new Promise<'done' | 'error'>(async resolve => {
@@ -27,14 +48,29 @@ export async function createHooks(definations: Spec[]) {
             const definationName = camelCase(
               defination.info.title.replace('.', '')
             );
+            const {definationName: declarationName} = pathSplit(
+              iteratedPaths?.[0].objectName as string
+            );
+
             const hooks = iteratedPaths?.map((path, index) => {
               return hookTemplate({...path, index, len: iteratedPaths.length});
             });
             const data =
-              `/* eslint-disable @typescript-eslint/no-explicit-any */\n/* eslint-disable @typescript-eslint/no-unused-vars */\nimport { ${definationName}Apis } from '../api'
-          ${configStore?.hook === 'ReactQuery' ? importReactQuery : importSwr}
+              `/* eslint-disable @typescript-eslint/no-explicit-any */
+              /* eslint-disable @typescript-eslint/no-unused-vars */
+               import { ${definationName}Apis } from '../api';
+               import { ${camelCase(declarationName)} } from "../types";
+              
+          ${
+            configStore?.hook === 'ReactQuery'
+              ? importReactQuery
+              : configStore?.hook === 'NG'
+              ? importNg
+              : importSwr
+          }
           export class ${definationName} extends ${definationName}Apis {
              ` +
+              (configStore?.hook === 'NG' ? injectsNg : '') +
               hooks?.join('') +
               '\n}';
 

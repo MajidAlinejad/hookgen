@@ -50,8 +50,10 @@ export interface IConfig {
   outDir: string;
   archive?: boolean;
   prettier?: Options;
+  resourcePick?: string;
   filter?: RegExp;
-  hook?: 'SWR' | 'ReactQuery';
+  singleJson?: boolean;
+  hook?: 'SWR' | 'ReactQuery' | 'NG';
   fileTypes?: {[key in fileTypesEnum]: fileTypes};
 }
 

@@ -3,7 +3,7 @@ import {Spec} from '../../types.ts';
 import chalk from 'chalk';
 import ora from 'ora';
 import {save} from '../../func/Save/save.ts';
-import {definitionFullName} from '../../helper/index.ts';
+import {definitionFullName, pathSplit} from '../../helper/index.ts';
 import {PathIterator} from '../../func/PathMapper/index.ts';
 import {camelCase} from '../../func/Typescript/TypeNameMaker/index.ts';
 import {fetcherTemplate} from './fetcherTemplate.ts';
@@ -11,6 +11,11 @@ import {configStore} from '../../config/index.ts';
 
 /** */
 export async function createFetcherClass(definations: Spec[]) {
+  const header =
+    "/* eslint-disable @typescript-eslint/no-unused-vars */\nimport { ContentType, HttpClient, getData,AxiosOpt } from '../client'";
+  const ngheader = `/* eslint-disable @typescript-eslint/no-unused-vars */\n
+    import { HttpHeaders, HttpParams, HttpRequest } from "@angular/common/http";
+    import {  HttpClient } from "../client";`;
   return new Promise<'done' | 'error'>(async resolve => {
     let hasError: 'done' | 'error' = 'done';
     const spinner = ora('Create definitions Fetcher').info();
@@ -31,11 +36,19 @@ export async function createFetcherClass(definations: Spec[]) {
                 len: iteratedPaths.length,
               });
             });
+            const {definationName} = pathSplit(
+              iteratedPaths?.[0].objectName as string
+            );
             const data =
-              `/* eslint-disable @typescript-eslint/no-unused-vars */\nimport { ContentType, HttpClient, getData } from '../client'
+              ` ${configStore?.hook === 'NG' ? ngheader : header}
+              import { ${camelCase(definationName)} } from "../types";
           export class ${camelCase(
             defination.info.title.replace('.', '')
-          )}Apis<SecurityDataType = unknown> extends HttpClient<SecurityDataType> {
+          )}Apis${
+            configStore?.hook === 'NG'
+              ? ' extends HttpClient'
+              : '<SecurityDataType = unknown> extends HttpClient<SecurityDataType>'
+          } {
 
             public Api = {
              ` +

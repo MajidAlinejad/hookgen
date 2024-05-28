@@ -6,18 +6,24 @@ import {
   IAsyncRecursiveComponentResult,
   recursiveSchemaAsyncType,
 } from '../../../../CreateAsyncComponentType/AsyncRecursiveComponent.mts';
-import {typeNameMaker} from '../../../../../../func/Typescript/TypeNameMaker/index.ts';
+import {
+  typeNameMaker,
+  typeNameSpaceMaker,
+} from '../../../../../../func/Typescript/TypeNameMaker/index.ts';
+import {refrenceTreatAsync} from '../../../../CreateAsyncComponentType/refrenceTreatAsync.mts';
 
 interface ICreateAsyncParameterType {
   parameters?: (OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject)[];
+  namespace?: string;
 }
 export function createAsyncParameterType({
   parameters,
+  namespace,
 }: ICreateAsyncParameterType) {
   return new Promise<string>(async resolve => {
     if (parameters) {
       const paramPromisses = parameters.map(async parameter => {
-        return await getParamAsync(parameter);
+        return await getParamAsync(parameter, namespace);
       });
       const data = await Promise.all(paramPromisses);
       resolve(data.join(''));
@@ -27,7 +33,8 @@ export function createAsyncParameterType({
 }
 
 function getParamAsync(
-  parameter: OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject
+  parameter: OpenAPIV3.ReferenceObject | OpenAPIV3.ParameterObject,
+  namespace?: string
 ): Promise<unknown> {
   return new Promise<string>(async resolve => {
     if (!isReferenceOrParameter(parameter)) {
@@ -35,6 +42,14 @@ function getParamAsync(
         if (!isReference(parameter.schema)) {
           const schemaData = await recursiveSchemaAsyncType(parameter.schema);
           const data = getRequest(schemaData, parameter.name);
+          resolve(data);
+        } else {
+          const res = refrenceTreatAsync(parameter.schema.$ref);
+          const data = getRequest(
+            {data: [res], type: 'REF'},
+            parameter.name,
+            namespace
+          );
           resolve(data);
         }
       }
@@ -45,14 +60,15 @@ function getParamAsync(
 
 export function getRequest(
   req: IAsyncRecursiveComponentResult | null,
-  name: string
+  name: string,
+  namespace?: string
 ) {
   if (req) {
     switch (req.type) {
       case 'REF':
         return peer(
           name,
-          typeNameMaker(req?.data[0]),
+          typeNameSpaceMaker(req?.data[0], namespace as string),
           req.nullable,
           req.isArray
         );

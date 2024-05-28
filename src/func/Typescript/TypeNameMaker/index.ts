@@ -3,11 +3,25 @@ import {camelize, capitalize} from '../../../helper/index.ts';
 export function typeNameMaker(name: string, extra: string = 'Set') {
   return 'I' + camelCase(name) + extra;
 }
+export function typeNameSpaceMaker(
+  name: string,
+  namespace: string,
+  extra: string = 'Set'
+) {
+  return (
+    namespace + '.I' + capitalize(camelize(nameRefineWithDot(name))) + extra
+  );
+}
 
 export function nameRefine(name: string) {
   const reg = /[^a-zA-Z0-9]/g;
 
-  return name.replace(reg, '');
+  return name.toString().replace(reg, '');
+}
+export function nameRefineWithDot(name: string) {
+  const reg = /[^a-zA-Z0-9.]/g;
+
+  return name.toString().replace(reg, '');
 }
 
 export function nameStringify(name: string) {

@@ -6,14 +6,6 @@ export function isDuplicate(key: string) {
   if (!isDuplicate) {
     duplications.push(key);
   }
-  return isDuplicate;
-}
-
-export async function resetDuplicationData() {
-  return new Promise(resolve => {
-    duplications.splice(0, duplications.length);
-    if (duplications.length === 0) {
-      resolve(duplications);
-    }
-  });
+  // return isDuplicate;
+  return false;
 }

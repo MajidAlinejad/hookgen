@@ -31,7 +31,17 @@ export function createAsyncRequestBodyType({
             const data = await AsyncRecursiveComponent({
               component: contentIterator[0].objectContent.schema,
             });
-            data && resolve({body: data.data, type: data.type});
+            if (data) {
+              if (
+                contentIterator.some(cType =>
+                  cType.objectName.includes('form-data')
+                )
+              ) {
+                resolve({body: data.data, type: 'FORMDATA'});
+              } else {
+                resolve({body: data.data, type: data.type});
+              }
+            }
           }
         }
       }

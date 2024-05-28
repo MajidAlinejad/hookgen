@@ -19,7 +19,7 @@ export function SwrTemplate({
   }
   const name = camelCase(itemName);
   const methodName = camelCase(method) as HttpMethodsUpperCase;
-  const tagName = scopeName || tags?.[0] || '';
+  const tagName = camelCase(scopeName || tags?.[0] || '');
 
   const typeRoot = `${camelCase(definationName)}.${
     tagName ? tagName + '.' : ''
@@ -36,15 +36,15 @@ export function SwrTemplate({
    * @name ${name}
    * @request ${methodName}:${path}
    */
-    use${entityName} :(
+    use${entityName} :(arg: ${requestType}${name},
         options?: Partial<PublicConfiguration<
         ${responseType}${name},
         unknown,
         any
       >>
        )=> {
-        return useSWR(['${tagName ? tagName + '.' : ''}${entityName}'],
-       this.Api._${tagName ? tagName + '.' : ''}${entityName},options
+        return useSWR(['${tagName ? tagName + '.' : ''}${entityName}'],() =>
+       this.Api._${tagName ? tagName + '.' : ''}${entityName}(arg),options
       );
   },`;
   } else

@@ -1,5 +1,45 @@
+import {configStore} from '../../config/index.ts';
+
 export function httpClientTemplate() {
-  return `/* eslint-disable */
+  if (configStore?.hook === 'NG') {
+    return `
+    /* eslint-disable */
+    /* tslint:disable */
+    import {  HttpHeaders, HttpRequest, HttpClient as NgHttpClient } from "@angular/common/http";
+    import { Injectable,Inject } from "@angular/core";
+
+    type IMethod = 'DELETE' | 'GET' | 'HEAD' | 'JSONP' | 'OPTIONS'
+
+    @Injectable()
+    export class HttpClient {
+      constructor(
+        private http: NgHttpClient,
+        @Inject(String) public baseUrl: string,
+      ) {
+      }
+      public request = <R, Q>(
+        data: Omit<
+          HttpRequest<Q|undefined>,
+          | 'context'
+          | 'reportProgress'
+          | 'urlWithParams'
+          | 'serializeBody'
+          | 'detectContentTypeHeader'
+          | 'clone'
+          | 'withCredentials'
+        >,
+      ) => {
+
+        return this.http.request<R>(data.method.toUpperCase() as IMethod, this.baseUrl + data.url,{
+          body: data.body ? data.body:null,
+          params:data.params,
+          headers:data.headers
+        });
+      };
+    }
+`;
+  } else
+    return `/* eslint-disable */
 /* tslint:disable */
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, HeadersDefaults, ResponseType } from 'axios'
 import axios from 'axios'
@@ -44,7 +84,7 @@ export enum ContentType {
   UrlEncoded = 'application/x-www-form-urlencoded',
   Text = 'text/plain',
 }
-
+export type AxiosOpt = Omit<AxiosRequestConfig, "data" | "params" | "url" | "responseType">;
 export class HttpClient<SecurityDataType = unknown> {
   public instance: AxiosInstance
   private securityData: SecurityDataType | null = null

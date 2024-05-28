@@ -5,22 +5,27 @@ import {} from '../../config/index.ts';
 import {URL} from '../../types.ts';
 
 export async function getDefinationsAndSave() {
+  let promisses: string[] = [];
   function regFilter(item: URL): URL | null {
     if (!configStore?.filter) {
       return item;
     }
-    return configStore?.filter?.test(item.name) ? null : item;
+    const res = configStore?.filter?.test(item.url) ? null : item;
+    return res;
   }
-
-  const Swaggerlist = await getFromSwaggerRootHtml({
-    baseUrl: configStore?.baseUrl + '/swagger/index.html',
-  });
-
-  const promisses = Swaggerlist.urls
-    .filter(item => regFilter(item))
-    .map(item => {
-      return configStore?.baseUrl + item.url;
+  if (!configStore?.singleJson) {
+    const Swaggerlist = await getFromSwaggerRootHtml({
+      baseUrl: configStore?.baseUrl + '/swagger/index.html',
     });
+
+    promisses = Swaggerlist.urls
+      .filter(item => regFilter(item))
+      .map(item => {
+        return configStore?.baseUrl + item.url;
+      });
+  } else {
+    promisses = [configStore?.baseUrl];
+  }
 
   const jsonsSchemas = await getSwaggerSchemaJsons({requests: promisses});
 

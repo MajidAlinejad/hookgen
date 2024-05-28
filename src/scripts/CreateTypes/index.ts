@@ -9,12 +9,18 @@ import {definitionFullName, getDefinationComment} from '../../helper/index.ts';
 // import {CreateAsyncComponentType} from './CreateAsyncComponentType/index.mts';
 import {CreateAsyncComponentType} from './CreateAsyncComponentType/index.mts';
 import {configStore} from '../../config/index.ts';
-const common = `interface ICOMMNON {
-  data?: never;
-  params?: never;
-  header?: never;
+const commonNg = `interface ICOMMNON {
+  data?: any;
+  params?: any;
+  header?: any;
+}`;
+const commonNever = `interface ICOMMNON {
+  data?: Record<PropertyKey, never>;
+  params?: Record<PropertyKey, never>;
+  header?: Record<PropertyKey, never>;
 }`;
 export async function createTypes(definations: Spec[]) {
+  const common = configStore?.hook === 'NG' ? commonNg : commonNever;
   return new Promise<'done' | 'error'>(async resolve => {
     let hasError: 'done' | 'error' = 'done';
     const spinner = ora('Create Types').info();

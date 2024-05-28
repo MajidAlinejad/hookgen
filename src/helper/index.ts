@@ -83,12 +83,24 @@ export function statusString(status: string) {
 
 export const pathSplit = (path: string) => {
   const reg = /\/{\w*}/g;
+  const regBracketsParams = /{(.*?)}/g;
   const refinePath = path.replace(reg, '');
+
+  const bracketsParams = path
+    .match(regBracketsParams)
+    ?.map(params => {
+      const name = params.replace(/{|}/g, '');
+      return 'By' + capitalize(name);
+    })
+    .join('');
+
   const pathScope = refinePath.split('/') as string[];
   const definationName = pathScope[1] as string;
   const scopeName = pathScope[3] as string;
-  const itemName = ((pathScope[pathScope.length - 1] as string) +
-    camelize(pathScope[pathScope.length - 2])) as string;
+  const itemName =
+    (((pathScope[pathScope.length - 1] as string) +
+      capitalize(pathScope[pathScope.length - 2])) as string) +
+    (bracketsParams || '');
 
   return {pathScope, definationName, scopeName, itemName};
 };

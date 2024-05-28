@@ -7,12 +7,13 @@ import {CreateAsyncTypeResponse} from './Response/CreateAsyncTypeResponse.ts';
 
 export function CreateAsyncTypeMethod(
   method: MethodIterator,
-  itemName: string
+  itemName: string,
+  namespace: string
 ): Promise<string> {
   return new Promise(async resolve => {
-    const Request = await CreateAsyncTypeRequest(itemName, method);
-    const Response = await CreateAsyncTypeResponse(itemName, method);
-    const Error = await CreateAsyncTypeError(itemName, method);
+    const Request = await CreateAsyncTypeRequest(itemName, method, namespace);
+    const Response = await CreateAsyncTypeResponse(itemName, method, namespace);
+    const Error = await CreateAsyncTypeError(itemName, method, namespace);
     const data = Request + Response + Error;
     const file = wrapNameSpace(method.objectName.toLowerCase(), data);
     resolve(file);

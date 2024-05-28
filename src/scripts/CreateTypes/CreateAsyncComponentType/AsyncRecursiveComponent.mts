@@ -14,6 +14,7 @@ import {componentMediaOrRef} from './componentMediaOrRef.mts';
 export interface IAsyncRecursiveComponent {
   component: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject | undefined;
   name?: string;
+  firstLvl?: boolean;
 }
 export interface IAsyncRecursiveSchema {
   component: OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject | undefined;
@@ -26,7 +27,10 @@ export type typeKey =
   | 'ENUM'
   | 'PREM'
   | 'ARRAY'
-  | 'MEDIA_TYPE';
+  | 'MEDIA_TYPE'
+  | 'FORMDATA'
+  | 'COM_PREM'
+  | 'RECORD';
 
 export interface IAsyncRecursiveComponentResult {
   data: [string, string?];
@@ -38,6 +42,7 @@ export interface IAsyncRecursiveComponentResult {
 export function AsyncRecursiveComponent({
   component,
   name,
+  firstLvl = false,
 }: IAsyncRecursiveComponent) {
   return new Promise<IAsyncRecursiveComponentResult | null>(async resolve => {
     if (component) {
@@ -54,7 +59,11 @@ export function AsyncRecursiveComponent({
             nullable: component.nullable,
           });
         } else {
-          const data = await recursiveSchemaAsyncType(component, name);
+          const data = await recursiveSchemaAsyncType(
+            component,
+            name,
+            firstLvl
+          );
           resolve({...(data as IAsyncRecursiveComponentResult), name});
         }
       }
@@ -66,7 +75,8 @@ export function AsyncRecursiveComponent({
 
 export async function recursiveSchemaAsyncType(
   component: OpenAPIV3.SchemaObject,
-  name?: string
+  name?: string,
+  firstLvl = false
 ) {
   return new Promise<IAsyncRecursiveComponentResult | null>(
     async (resolve, reject) => {
@@ -99,6 +109,7 @@ export async function recursiveSchemaAsyncType(
             );
             resolve({
               ...(data as IAsyncRecursiveComponentResult),
+              type: 'RECORD',
               nullable: component.nullable,
               name: name,
             });
@@ -114,9 +125,10 @@ export async function recursiveSchemaAsyncType(
         } else {
           if (!component.enum) {
             const premitive = await getPremitiveAsyncType(component.type);
+
             resolve({
               data: [premitive],
-              type: 'PREM',
+              type: firstLvl ? 'COM_PREM' : 'PREM',
               name: name,
               nullable: component.nullable,
             });

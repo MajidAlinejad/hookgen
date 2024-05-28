@@ -4,6 +4,8 @@ import {pathSplit} from '../../helper/index.ts';
 import {configStore} from '../../config/index.ts';
 import {SwrTemplate} from './swrTemplate.ts';
 import {ReactQueryTemplate} from './ReactQueryTemplate.ts';
+import {camelCase} from '../../func/Typescript/TypeNameMaker/index.ts';
+import {NGTemplate} from './ngTemplate.ts';
 let openedScope: string | undefined = undefined;
 
 export interface IHooksTemplate {
@@ -25,8 +27,10 @@ export function hookTemplate({
 }) {
   const {scopeName} = pathSplit(objectName);
   const iteratedMathods = MethodIterator(objectPath);
-  const tagName =
-    scopeName || iteratedMathods?.[0].objectMethod.tags?.[0] || '_NO_TAG';
+  const tagName = camelCase(
+    scopeName || iteratedMathods?.[0].objectMethod.tags?.[0] || '_NO_TAG'
+  );
+
   let apis = '';
   if (configStore?.hook === 'ReactQuery') {
     apis = iteratedMathods
@@ -38,10 +42,20 @@ export function hookTemplate({
         });
       })
       .join('') as string;
-  } else {
+  } else if (configStore?.hook === 'SWR') {
     apis = iteratedMathods
       ?.map(method => {
         return SwrTemplate({
+          method: method.objectName,
+          path: objectName,
+          media: method.objectMethod,
+        });
+      })
+      .join('') as string;
+  } else if (configStore?.hook === 'NG') {
+    apis = iteratedMathods
+      ?.map(method => {
+        return NGTemplate({
           method: method.objectName,
           path: objectName,
           media: method.objectMethod,

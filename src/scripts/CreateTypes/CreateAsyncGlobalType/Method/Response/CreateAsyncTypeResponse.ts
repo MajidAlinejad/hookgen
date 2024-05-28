@@ -3,7 +3,7 @@ import {MethodIterator} from '../../../../../func/MethodIterator/index.ts';
 import {typeMaker} from '../../../../../func/Typescript/TypeMaker/index.ts';
 import {
   camelCase,
-  typeNameMaker,
+  typeNameSpaceMaker,
 } from '../../../../../func/Typescript/TypeNameMaker/index.ts';
 import {wrapNameSpace} from '../../../Declaration/declaration.ts';
 import {
@@ -14,7 +14,8 @@ import {methodHasResponseAsync} from '../Errors/methodHasErrorOrResAsync.mts';
 
 export function CreateAsyncTypeResponse(
   itemName: string,
-  method: MethodIterator
+  method: MethodIterator,
+  namespace: string
 ): Promise<string> {
   return new Promise(async resolve => {
     const response = await methodHasResponseAsync(method);
@@ -22,7 +23,7 @@ export function CreateAsyncTypeResponse(
       const res = await createAsyncResponseModel({
         response,
       });
-      const data = getResponse(res, itemName);
+      const data = getResponse(res, itemName, namespace);
       const file = wrapNameSpace(camelCase('Response'), data);
       resolve(file);
     } else {
@@ -33,12 +34,17 @@ export function CreateAsyncTypeResponse(
 
 export function getResponse(
   res: ICreateAsyncResponseModelResult | null,
-  name: string
+  name: string,
+  namespace: string
 ) {
   if (res) {
-    return res.type === 'REF'
-      ? typeMaker(name, typeNameMaker(res.response[0]))
-      : '{' + typeMaker(name, res.response[0]) + '}';
+    if (res.type === 'REF') {
+      const value = typeNameSpaceMaker(res.response[0], namespace); //
+      return typeMaker(name, value);
+    } else {
+      const value = res.response[0];
+      return typeMaker(name, value);
+    }
   } else {
     return '';
   }

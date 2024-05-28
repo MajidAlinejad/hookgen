@@ -6,12 +6,12 @@ import {OpenAPIV3} from 'openapi-types';
 import {configStore} from '../../config/index.ts';
 const getResourcePicked = (value: string) => {
   if (configStore?.resourcePick) {
-    return `Pick<${value},'${configStore?.resourcePick}'>['${configStore?.resourcePick}']`;
+    return `${value}['${configStore?.resourcePick}']`;
   } else {
     return value;
   }
 };
-export function ReactQueryTemplate({
+export function NGTemplate({
   method,
   path,
   media: {description, deprecated, tags, summary, parameters},
@@ -27,7 +27,6 @@ export function ReactQueryTemplate({
   const name = camelCase(itemName);
   const methodName = camelCase(method) as HttpMethodsUpperCase;
   const tagName = camelCase(scopeName || tags?.[0] || '');
-
   const typeRoot = `${camelCase(definationName)}.${
     tagName ? tagName + '.' : ''
   }${methodName}`;
@@ -76,14 +75,14 @@ export function ReactQueryTemplate({
    
     ${deprecated ? '' : '*/ '}
  use${entityName} :(
-	options?: Omit<UseMutationOptions<${getResourcePicked(
-    `${responseType}${name}`
-  )}, unknown,${requestType}${name} | undefined, unknown>, "mutationFn">,
-  axiosOptions?: AxiosOpt,
+	  options?: Omit<MutationObserverOptions<${responseType}${name}, HttpErrorResponse<${responseType}${name}>, ${requestType}${name}| undefined, unknown>, "mutationFn"> | undefined,
+  httpOptions?:HttpRequest<${responseType}${name}>,
 ) => {
-	return useMutation((args)=>this.Api._${
-    tagName ? tagName + '.' : ''
-  }${entityName}(args,axiosOptions), options);
+	return this.useMutation((args:${requestType}${name})=>{
+         return this.Api._${
+           tagName ? tagName + '.' : ''
+         }${entityName}(args,httpOptions)
+    }, options);
 } ,
 ${deprecated ? '*/' : ' '}`;
 }
@@ -109,31 +108,47 @@ function infiniteMethod(
    * @tags ${tags}
    * @name ${name}
    * @request ${methodName}:${path}
-   ${deprecated ? '' : '*/ '}
-   use${entityName}Infinit:<T = ${getResourcePicked(`${responseType}${name}`)}>(
-	args: ${requestType}${name},
-	options?:
+   * options?:
 		| Omit<
 				UseInfiniteQueryOptions<${getResourcePicked(
           `${responseType}${name}`
-        )}, unknown, T, ${getResourcePicked(
+        )}, HttpErrorResponse<${responseType}${name}>, T, ${getResourcePicked(
           `${responseType}${name}`
         )}, (string | ${requestType}${name})[]>,
 				"queryFn" | "queryKey"
 		  >
 		| undefined,
-  axiosOptions?: AxiosOpt,
+   ${deprecated ? '' : '*/ '}
+   use${entityName}Infinit:(
+	args: BehaviorSubject<${requestType}${name}>,
+   httpOptions?:HttpRequest<${responseType}${name}>,
 ) => {
-	return useInfiniteQuery(['${
-    tagName ? tagName + '.' : ''
-  }${entityName}', args], ({ pageParam = 1 }) => this.Api._${
-    tagName ? tagName + '.' : ''
-  }${entityName}({ ...args, 
-   params:{
-              ...args.params,
-              PageNumber: pageParam,
-            }
-  },  axiosOptions), options);
+
+   args.pipe(
+        switchMap(arg => {
+          return this.useInfiniteQuery(['${
+            tagName ? tagName + '.' : ''
+          }${entityName}', arg], ({ pageParam = 1 }) => {
+
+                return this.Api._${
+                  tagName ? tagName + '.' : ''
+                }${entityName}({ ...arg, 
+                  params:{
+                              ...arg.params,
+                              PageNumber: pageParam,
+                              }
+                  },  httpOptions)
+            }, {
+                  keepPreviousData: true,
+                  refetchOnMount: false,
+                  refetchOnWindowFocus: false,
+                  getNextPageParam: lastPage => {
+                    return lastPage.result.hasNextPage ? lastPage.result.pageNumber + 1 : false;
+                  },
+              }).result$;
+        }))
+        
+	
 },
 ${deprecated ? '*/' : ' '}`;
 }
@@ -159,18 +174,30 @@ function getMethod(
    * @name ${name}
    * @request ${methodName}:${path}
      ${deprecated ? '' : '*/ '}
-  use${entityName} : <T =  ${getResourcePicked(`${responseType}${name}`)}>(
-	args:  ${requestType}${name},
-	options?: Omit<UseQueryOptions<${getResourcePicked(
-    `${responseType}${name}`
-  )}, unknown, T, (string |${requestType}${name})[]>, "initialData" | "queryFn" | "queryKey">,
-  axiosOptions?: AxiosOpt,
+  use${entityName} :(
+
+	args:  BehaviorSubject<${requestType}${name}>,
+    options?: (Omit<NgQueryObserverOptions<${getResourcePicked(
+      `${responseType}${name}`
+    )}, HttpErrorResponse<${responseType}${name}>, ${getResourcePicked(
+      `${responseType}${name}`
+    )}, ${getResourcePicked(
+      `${responseType}${name}`
+    )}, (string|undefined | ${requestType}${name})[]>, "queryFn" | "initialData">) | undefined,
+  httpOptions?:HttpRequest<${responseType}${name}>,
+    extraKey?:string,
 ) => {
-	return useQuery(['${
-    tagName ? tagName + '.' : ''
-  }${entityName}', args], () => this.Api._${
-    tagName ? tagName + '.' : ''
-  }${entityName}(args,axiosOptions), options);
+	return args.pipe(
+        switchMap(arg => {
+          return this.useQuery(['${
+            tagName ? tagName + '.' : ''
+          }${entityName}', arg,extraKey], () => {
+                  return  this.Api._${
+                    tagName ? tagName + '.' : ''
+                  }${entityName}(arg,httpOptions)
+            }, options).result$;
+
+        }))
 },
   ${deprecated ? '*/' : ' '}`;
 }

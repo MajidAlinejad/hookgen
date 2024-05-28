@@ -3,7 +3,7 @@ import {MethodIterator} from '../../../../../func/MethodIterator/index.ts';
 import {interfaceMaker} from '../../../../../func/Typescript/InterfaceMaker/index.ts';
 import {
   camelCase,
-  typeNameMaker,
+  typeNameSpaceMaker,
 } from '../../../../../func/Typescript/TypeNameMaker/index.ts';
 import {wrapNameSpace} from '../../../Declaration/declaration.ts';
 import {peer} from '../../../../../func/Typescript/peer/index.ts';
@@ -16,11 +16,13 @@ import {
 
 export function CreateAsyncTypeRequest(
   itemName: string,
-  method: MethodIterator
+  method: MethodIterator,
+  namespace: string
 ): Promise<string> {
   return new Promise(async resolve => {
     const params = await createAsyncParameterType({
       parameters: method.objectMethod.parameters,
+      namespace,
     });
     const header = await createAsyncHeaderType({
       parameters: method.objectMethod.parameters,
@@ -29,9 +31,11 @@ export function CreateAsyncTypeRequest(
       requestsBody: method.objectMethod.requestBody,
     });
 
-    const paramValue = params ? peer('params', '{' + params + '}') : '';
+    const paramValue = params
+      ? peer('params', 'Partial<{' + params + '}>')
+      : '';
     const headerValue = header ? peer('header', '{' + header + '}', true) : '';
-    const bodyValue = requestBodys(requestBody);
+    const bodyValue = requestBodys(requestBody, namespace);
     const data = interfaceMaker(
       itemName,
       paramValue + headerValue + bodyValue,
@@ -42,17 +46,24 @@ export function CreateAsyncTypeRequest(
   });
 }
 
-function requestBodys(requestBody: ICreateAsyncRequestBodyResultType | null) {
+function requestBodys(
+  requestBody: ICreateAsyncRequestBodyResultType | null,
+  namespace: string
+) {
   if (requestBody) {
     switch (requestBody.type) {
       case 'REF':
-        return peer('data', typeNameMaker(requestBody.body[0]));
+        return peer('data', typeNameSpaceMaker(requestBody.body[0], namespace)); //
       case 'PREM':
         return peer('data', requestBody.body[0]);
       case 'ARRAY':
         return peer('data', requestBody.body[0]);
       case 'MEDIA':
         return peer('data', '{' + requestBody.body[0] + '}');
+      case 'FORMDATA':
+        return (
+          peer('data', 'FormData') + `/* param : ${requestBody.body[0]} */`
+        );
       default:
         return '';
     }

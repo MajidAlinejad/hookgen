@@ -25,6 +25,12 @@ export function componentMediaOrRef(
         component.isArray
       );
     }
+    if (component.type === 'COM_PREM') {
+      return typeMaker(
+        typeNameMaker(component.name || '___NoNameENUM'),
+        component.data[0]
+      );
+    }
     if (component.type === 'ENUM') {
       const duplicate = isDuplicate(component.name as string);
       return !duplicate
@@ -51,6 +57,26 @@ export function componentMediaOrRef(
             component.data[0]
           )
         : '';
+    }
+    if (component.type === 'RECORD') {
+      // const duplicate = isDuplicate(component.name as string);
+      // return !duplicate
+      //   ? typeMaker(
+      //       typeNameMaker(component.name || '___NoNameMEDIA'),
+      //       component.data[0]
+      //     )
+      //   : '';
+
+      if (component.data) {
+        const data = component.data[0] || 'any';
+        const type = `Record<PropertyKey,${data}>`;
+        return peer(
+          component.name || '___NoNamePREM?',
+          type,
+          component.nullable,
+          false
+        );
+      }
     }
   }
   return '';

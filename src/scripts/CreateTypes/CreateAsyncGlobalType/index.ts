@@ -13,9 +13,12 @@ import {CreateAsyncTypeMethod} from './Method/CreateAsyncTypeMethod.ts';
 export async function CreateAsyncGlobalType(defination: Spec) {
   return new Promise<string>(async resolve => {
     const iteratedPaths = PathIterator(defination.paths);
+    const namespace = defination.info.title
+      .replaceAll('.', '')
+      .replaceAll(' ', '');
     if (iteratedPaths?.length) {
       const pathPromises = iteratedPaths?.map(path => {
-        return CreateAsyncTypeScope(path);
+        return CreateAsyncTypeScope(path, namespace);
       });
 
       if (pathPromises?.length) {
@@ -32,14 +35,21 @@ export async function CreateAsyncGlobalType(defination: Spec) {
   });
 }
 
-export function CreateAsyncTypeScope(path: IPathIterator): Promise<string> {
+export function CreateAsyncTypeScope(
+  path: IPathIterator,
+  namespace: string
+): Promise<string> {
   return new Promise(async resolve => {
     const {scopeName, itemName} = pathSplit(path.objectName);
     const iteratedMathods = MethodIterator(path.objectPath);
     const tagName =
       scopeName || iteratedMathods?.[0].objectMethod.tags?.[0] || '__NO_TAG';
     const methodPromises = iteratedMathods?.map(async method => {
-      return await CreateAsyncTypeMethod(method, camelCase(itemName));
+      return await CreateAsyncTypeMethod(
+        method,
+        camelCase(itemName),
+        namespace
+      );
     });
 
     if (methodPromises?.length) {

@@ -2,6 +2,7 @@ import {OpenAPIV3} from 'openapi-types';
 import {MethodIterator} from '../../func/MethodIterator/index.ts';
 import {capitalize, pathSplit} from '../../helper/index.ts';
 import {camelCase} from '../../func/Typescript/TypeNameMaker/index.ts';
+import {configStore} from '../../config/index.ts';
 let openedScope: string | undefined = undefined;
 
 interface IApiTemplate {
@@ -23,8 +24,9 @@ export function fetcherTemplate({
 }) {
   const {scopeName} = pathSplit(objectName);
   const iteratedMathods = MethodIterator(objectPath);
-  const tagName =
-    scopeName || iteratedMathods?.[0].objectMethod.tags?.[0] || '_NO_TAG';
+  const tagName = camelCase(
+    scopeName || iteratedMathods?.[0].objectMethod.tags?.[0] || '_NO_TAG'
+  );
   const apis = iteratedMathods
     ?.map(method => {
       return apiTemplate({
@@ -47,7 +49,7 @@ export function fetcherTemplate({
     return index + 1 === len ? apis + '}, ' : apis;
   }
 }
-const getContentBody = (
+export const getContentBody = (
   requestBody: OpenAPIV3.RequestBodyObject | undefined
 ) => {
   if (requestBody !== undefined && requestBody.content !== undefined) {
@@ -76,41 +78,69 @@ const getContentBody = (
 export function apiTemplate({
   method,
   path,
-  media: {description, deprecated, tags, summary, requestBody},
+  media: {description, deprecated, tags, summary},
 }: IApiTemplate) {
   const {definationName, scopeName, itemName} = pathSplit(path);
   if (!method) {
     return '';
   }
 
-  const tagName = scopeName || tags?.[0] || '';
+  const tagName = camelCase(scopeName || tags?.[0] || '');
   const typeRoot = `${camelCase(definationName)}.${
     tagName ? tagName + '.' : ''
   }${capitalize(method)}`;
   const name = camelCase(itemName);
   const requestType = `${typeRoot}.Request.`;
   const responseType = `${typeRoot}.Response.`;
-  return `\n/**
+
+  const axiosResponse = `\n/**
   ${deprecated ? '* @deprecated' : '* '}
    * ${description ? description : 'No description'}
    * @summary  ${summary}
    * @tags ${tags}
    * @name ${name}
    * @request ${capitalize(method)}:${path}
-   */
+    ${deprecated ? '' : '*/ '}
    ${
      camelCase(method) + name
-   } :async ({data, params,header}:${requestType}${name}) => {
+   } :async (args?:${requestType}${name}, options?: AxiosOpt) => {
      const {data: axiosData} = await this.request<${responseType}${name}, ${requestType}${name}>({
-      path: \`${path.replace('{', '${params?.')}\`,
+      ...options,
+      path: \`${path.replace('{', '${args?.params?.')}\`,
       method: '${capitalize(method)}',
-      body: getData(data),
-      type: ContentType.${getContentBody(
-        requestBody as OpenAPIV3.RequestBodyObject
-      )},
+      body: getData(args?.data),
       format: 'json',
-      query:{...getData(params),...header},
+      query:{...getData(args?.params),...args?.header},
     });
-     return axiosData; 
-  },`;
+     return axiosData${
+       configStore?.resourcePick ? '.' + configStore?.resourcePick : ''
+     }; 
+  },
+  ${deprecated ? '*/' : ' '}`;
+
+  const ngResponse = `\n/**
+  ${deprecated ? '* @deprecated' : '* '}
+   * ${description ? description : 'No description'}
+   * @summary  ${summary}
+   * @tags ${tags}
+   * @name ${name}
+   * @request ${capitalize(method)}:${path}
+    ${deprecated ? '' : '*/ '}
+   ${
+     camelCase(method) + name
+   } : (args?:${requestType}${name}, options?: HttpRequest<${responseType}${name}>) => {
+     return this.request<${responseType}${name}, ${requestType}${name}['data']>({
+      ...options,
+      url:\`${path.replace('{', '${args?.params?.')}\`,
+      method:'${capitalize(method)}',
+       body: args?.data,
+       responseType: 'json',
+       params: new HttpParams({ fromObject: args?.params }),
+       headers: new HttpHeaders({ ...args?.header }),
+    })
+     
+  },
+  ${deprecated ? '*/' : ' '}`;
+
+  return configStore?.hook === 'NG' ? ngResponse : axiosResponse;
 }
