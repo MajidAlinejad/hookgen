@@ -1,34 +1,19 @@
 name: 🎈 Publish
 on:
-  push:
-    branches:
-      - main
-  pull_request: {}
-
-permissions:
-  actions: write
-  contents: read
-
+  release:
+    types: [published]
 jobs:
-  deploy:
-    name: 🚀 Publish
+  build:
     runs-on: ubuntu-latest
-    # only build/deploy main branch on pushes
-    if: ${{ (github.ref == 'refs/heads/main') &&
-      github.event_name == 'push' }}
-
     steps:
-      - name: ⬇️ Checkout repo
-        uses: actions/checkout@v3
-
-      - name: ⎔ Setup node
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v4
+      # Setup .npmrc file to publish to npm
+      - uses: actions/setup-node@v4
         with:
-          node-version: 18
-          registry-url: https://registry.npmjs.org/
-          
-      - name: 🚀 Deploy Production
-        if: ${{ github.ref == 'refs/heads/main' }}
-        run: sudo ln -s /usr/local/bin/node /usr/bin/node && npm install && npm tsup && npm publish
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      - run: npm ci
+      - run: npm compile
+      - run: npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
