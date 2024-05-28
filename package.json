@@ -1,8 +1,9 @@
 {
-  "name": "ts-code-gen",
+  "name": "hook-gen",
   "version": "0.0.1",
   "description": "A Typescript OpenApi CodeGen",
   "keywords": [
+    "hook-gen",
     "ts-code-gen",
     "typescript code generator",
     "typescript OpenApi code generator",
