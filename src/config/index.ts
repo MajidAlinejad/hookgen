@@ -3,8 +3,8 @@ import ora from 'ora';
 import {cosmiconfig} from 'cosmiconfig';
 import {IConfig} from '../types.ts';
 import {ConfigStore} from './store/store.ts';
-const spinner = ora('get genrc config file');
-const explorer = () => cosmiconfig('genrc');
+const spinner = ora('get hookgenrc config file');
+const explorer = () => cosmiconfig('hookgenrc');
 // eslint-disable-next-line prefer-const
 export let configStore: ConfigStore | undefined = undefined;
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -12,7 +12,7 @@ export let configStore: ConfigStore | undefined = undefined;
 export async function getConfig(): Promise<IConfig | undefined> {
   spinner.start();
   try {
-    const configFile = await explorer().load('./genrc.json');
+    const configFile = await explorer().load('./hookgenrc.json');
     if (configFile?.isEmpty) {
       spinner.warn();
       console.warn(chalk.yellow(' └ codegen file is empty!'));

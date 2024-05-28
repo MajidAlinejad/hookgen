@@ -35,10 +35,10 @@
   "main": "dist/index.cjs",
   "module": "dist/index.js",
   "bin": {
-    "gen": "dist/index.js && gts fix"
+    "hookgen": "dist/index.js && gts fix"
   },
   "scripts": {
-    "gen": "ts-node-esm src/index.ts",
+    "hookgen": "ts-node-esm src/index.ts",
     "postgen": "gts fix",
     "lint": "gts lint",
     "clean": "gts clean",
