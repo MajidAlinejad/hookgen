@@ -28,6 +28,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
       - name: 🚀 Deploy Production
         if: ${{ github.ref == 'refs/heads/main' }}
-        run: npm install && npm tsup && npm publish
+       
+        run:  export NVM_DIR=~/.nvm && source ~/.nvm/nvm.sh && npm install && npm tsup && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_GITHUB_TOKEN }}
