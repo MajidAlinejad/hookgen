@@ -1,5 +1,5 @@
 {
-  "baseUrl": "https://intapi.ifp24.com",
+  "baseUrl": "your open api url",
   "outDir": "./out",
   "hook": "ReactQuery",
   "archive": true,
