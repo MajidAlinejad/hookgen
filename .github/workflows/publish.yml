@@ -1,7 +1,9 @@
 name: 🎈 Publish
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+      - main
+  pull_request: {}
 jobs:
   build:
     runs-on: ubuntu-latest
