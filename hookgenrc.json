@@ -1,5 +1,5 @@
 {
-  "baseUrl": "your open api url",
+  "baseUrl": "https://your_openapi_url.com",
   "outDir": "./out",
   "hook": "ReactQuery",
   "archive": true,
