@@ -26,16 +26,18 @@ const configAxiosRequest = (
 
 /** this situation happen when request does not even send to network or internet */
 const onAxiosRequestError = (error: AxiosError): Promise<AxiosError> => {
-  const spinner = spins.find(spinObj => spinObj.id === error?.config?.url)
-    ?.spinner;
+  const spinner = spins.find(
+    spinObj => spinObj.id === error?.config?.url
+  )?.spinner;
   spinner?.fail();
   return Promise.reject(error);
 };
 
 /** handle Response of api response  */
 const onAxiosResponse = (response: AxiosResponse<Spec>): AxiosResponse => {
-  const spinner = spins.find(spinObj => spinObj.id === response.config.url)
-    ?.spinner;
+  const spinner = spins.find(
+    spinObj => spinObj.id === response.config.url
+  )?.spinner;
   spinner?.succeed();
   return response;
 };
@@ -43,8 +45,9 @@ const onAxiosResponse = (response: AxiosResponse<Spec>): AxiosResponse => {
 /** handle api response errors */
 const onAxiosResponseError = (error: AxiosError): Promise<AxiosError> => {
   try {
-    const spinner = spins.find(spinObj => spinObj.id === error?.config?.url)
-      ?.spinner;
+    const spinner = spins.find(
+      spinObj => spinObj.id === error?.config?.url
+    )?.spinner;
     spinner?.fail();
     if (error.response) {
       console.warn(

@@ -65,8 +65,8 @@ export async function createHooks(definations: Spec[]) {
             configStore?.hook === 'ReactQuery'
               ? importReactQuery
               : configStore?.hook === 'NG'
-              ? importNg
-              : importSwr
+                ? importNg
+                : importSwr
           }
           export class ${definationName} extends ${definationName}Apis {
              ` +

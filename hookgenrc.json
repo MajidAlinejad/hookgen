@@ -1,5 +1,6 @@
 {
-  "baseUrl": "https://your_openapi_url.com",
+  "baseUrl": "https://int-sabt-api.nfpsmart.ir/swagger/v1/swagger.json",
+  "singleJson": true,
   "outDir": "./out",
   "hook": "ReactQuery",
   "archive": true,

@@ -9,7 +9,7 @@ export class ConfigStore implements IConfig {
   public filter?;
   public resourcePick?: string | undefined;
   public archive?: boolean;
-  public definition: string = '';
+  public definition = '';
   public fileTypes: {[key in fileTypesEnum]: fileTypes} = {
     enums: 'ts',
     types: 'd.ts',

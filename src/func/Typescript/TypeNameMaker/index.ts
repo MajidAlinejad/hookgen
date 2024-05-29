@@ -1,12 +1,12 @@
 import {camelize, capitalize} from '../../../helper/index.ts';
 
-export function typeNameMaker(name: string, extra: string = 'Set') {
+export function typeNameMaker(name: string, extra = 'Set') {
   return 'I' + camelCase(name) + extra;
 }
 export function typeNameSpaceMaker(
   name: string,
   namespace: string,
-  extra: string = 'Set'
+  extra = 'Set'
 ) {
   return (
     namespace + '.I' + capitalize(camelize(nameRefineWithDot(name))) + extra

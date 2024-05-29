@@ -1,6 +1,6 @@
 {
   "name": "hook-gen",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A Typescript OpenApi CodeGen",
   "keywords": [
     "hook-gen",
@@ -32,21 +32,14 @@
     "url": "https://github.com/MajidAlinejad"
   },
   "private": false,
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "bin": {
-    "hookgen": "dist/index.js && gts fix"
-  },
+  "main": "dist/cli.cjs",
+  "module": "dist/cli.js",
+  "bin": "dist/cli.js",
   "scripts": {
-    "hookgen": "ts-node-esm src/index.ts",
-    "postgen": "gts fix",
+    "hookgen": "npx tsx src/cli.ts",
     "lint": "gts lint",
     "clean": "gts clean",
-    "build": "tsc -p .",
-    "compile": "tsup",
-    "fix": "gts fix",
-    "pretest": "npm run compile",
-    "posttest": "npm run lint"
+    "build": "tsup"
   },
   "type": "module",
   "devDependencies": {

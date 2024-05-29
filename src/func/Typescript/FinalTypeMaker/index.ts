@@ -29,8 +29,8 @@ export function finalTypeMaker({
               : typeNameMaker(pathName + post.set)
           )
         : '' + hasParams
-        ? peer('params', typeNameMaker(pathName + post.nonRef))
-        : ''
+          ? peer('params', typeNameMaker(pathName + post.nonRef))
+          : ''
     );
 
     return result;
