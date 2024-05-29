@@ -110,6 +110,15 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 We appreciate the contributions of the open-source community and the developers who have helped make this project possible.
 
+## Contributors
+
+<a href="https://github.com/MajidAlinejad"  >
+<img style="border-radius:100%" width="40" alt="Majid Alinejad" src="https://avatars.githubusercontent.com/u/25850003?s=400&u=bd3ade163371339aca49cb094759232a416077d4&v=4">
+</a>
+<a href="https://github.com/farhadrezvani"  >
+<img style="border-radius:100%" width="40" alt="Farhad Rezvani" src="https://avatars.githubusercontent.com/u/10855997?v=4">
+</a>
+
 ## Contact
 
 For any inquiries or support, please contact Majid Alinejad at majid.alinejad@example.com.
