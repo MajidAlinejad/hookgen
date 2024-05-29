@@ -14,13 +14,13 @@ HookGen is a powerful tool designed to generate TypeScript types and code for An
 To install HookGen, you can use npm or yarn:
 
 ```bash
-npm install hookgen --save-dev
+npm install hook-gen --save-dev
 ```
 
 or
 
 ```bash
-yarn add hookgen --dev
+yarn add hook-gen --dev
 ```
 
 ## Configuration
@@ -53,12 +53,25 @@ HookGen can be configured using a \`.hookgenrc\` file. Below is an example confi
 
 ## Usage
 
+Add following line to your package.json file at script section:
+
+```json
+{
+  "scripts": {
+    "hook-gen": "hook-gen",
+    "start": "***",
+    "lint": "***",
+    "test": "***"
+  }
+}
+```
+
 After installing HookGen, you can use it in your project to generate TypeScript types and hooks.
 
 ### Basic Command
 
 ```bash
-npm run hookgen
+npm run hook-gen
 ```
 
 ### Options
