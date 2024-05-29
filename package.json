@@ -1,6 +1,6 @@
 {
   "name": "hook-gen",
-  "version": "0.1.2",
+  "version": "0.1.1",
   "description": "A Typescript OpenApi CodeGen",
   "keywords": [
     "hook-gen",
@@ -39,7 +39,7 @@
     "hookgen": "npx tsx src/cli.ts",
     "lint": "gts lint",
     "clean": "gts clean",
-    "build": "tsup"
+    "compile": "tsup"
   },
   "type": "module",
   "devDependencies": {

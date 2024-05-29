@@ -14,13 +14,13 @@ HookGen is a powerful tool designed to generate TypeScript types and code for An
 To install HookGen, you can use npm or yarn:
 
 ```bash
-npm install -g hookgen
+npm install hookgen --save-dev
 ```
 
 or
 
 ```bash
-yarn global add hookgen
+yarn add hookgen --dev
 ```
 
 ## Configuration
