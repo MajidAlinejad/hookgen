@@ -31,6 +31,7 @@ HookGen can be configured using a \`.hookgenrc\` file. Below is an example confi
 {
   "baseUrl": "openapi url",
   "outDir": "./out",
+  "singleJson": true,
   "hook": "ReactQuery", // SWR - ReactQuery -  NG
   "archive": true,
   "fileTypes": {
@@ -62,9 +63,11 @@ npm run hookgen
 
 ### Options
 
+- `"baseUrl": <url>`: Set base url of open api.
 - `"hook": <library>`: Specify the library (SWR, ReactQuery, NG).
 - `"outDir": <directory>`: Specify the output directory for the generated files.
 - `"archive": <boolean>`: download a copy from current version of swagger json.
+- `"singleJson": <boolean>`: If it's 'true' base url must be end in .json file otherwise base url must be your openapi root url
 
 ## Contributing
 
